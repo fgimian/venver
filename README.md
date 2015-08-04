@@ -42,7 +42,7 @@ venv cd my_venv
 venv cd
 
 # You may also copy a virtualenv to a new name
-venv my_venv new_venv
+venv copy my_venv new_venv
 
 # Finally, you may remove any virtualenv you like
 venv remove my_venv
