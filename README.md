@@ -19,10 +19,10 @@ that best fits their needs.  I'm particularly fond of all the pyenv projects.
 
 However, there are reasons that I wanted to develop my own library.
 
-* virtualenvwrapper doesn't centralise its commands and pollutes your shell 
-  with a huge number of bash functions.  It also doesn't offer auto-switching
-  out of the box.
-* pyenv-virtualenv was much much closer to what I was after and is a really
+* **virtualenvwrapper** doesn't centralise its commands and pollutes your 
+  shell with a huge number of bash functions.  It also doesn't offer auto-
+  switching out of the box.
+* **pyenv-virtualenv** was much much closer to what I was after and is a really
   awesome project as is pyenv.  However, I do find that I often use system
   provided Python in most cases in my work and the fact that pyenv-virtualenv
   is a plugin to pyenv means that help is not as easy to get to.  venver is a
@@ -56,12 +56,15 @@ cd myproject           # the my_venv virtualenv will continue to be activated
 venv deactivate        # my_env is deactivated and the project virtualenv is activated
 venv activate my_venv  # re-activate your non-project virtualenv to force override again
 
-# You may jump straight into a virtualenv root directory using inspect
-venv inspect my_venv
+# You may jump straight into a virtualenv base or site-packages directory
+# using respective command below
+venv base my_venv
+venv site my_venv
 
-# If a virtualenv is active, you may cd into it without specifying the name
+# If a virtualenv is active, you may use base or site without specifying
+# the virtualenv name
 cd -
-venv inspect
+venv base
 
 # You may also copy a virtualenv to a new name
 venv copy my_venv new_venv
