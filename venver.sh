@@ -407,7 +407,12 @@ _venv_list()
   IFS=$'\n'
   for virtualenv in $(__venv_simple_list)
   do
-    echo "* $virtualenv"
+    if [ ! -z $VIRTUAL_ENV ] && [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
+    then
+      echo -e "${green}* $virtualenv${no_color}"
+    else
+      echo "  $virtualenv"
+    fi
   done
   unset IFS
 }
