@@ -66,7 +66,8 @@ venv()
   if [ -z "$1" ] || [ "$(type -t _venv_"$1")" != "function" ]
   then
     cat << EOF
-usage: venv <command> [<args>]
+
+$(echo -e $blue)usage: venv <command> [<args>]$(echo -e $no_color)
 
 Automatically managing projects:
 
@@ -90,6 +91,7 @@ EOF
     if [ ! -z "$1" ]
     then
       echo -e "${red}venv: unsupported command $1${no_color}"
+      echo ""
     fi
     return 1
   fi
@@ -123,7 +125,7 @@ cd()
   fi
 
   local virtualenv_dir
-  virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+  virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
   # If the .virtualenv file was found, we ensure that the environment is activated
   if [ ! -z "$virtualenv_dir" ]
@@ -162,7 +164,7 @@ _venv_init()
   local virtualenv
   local virtualenv_dir
 
-  virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+  virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
   if [ ! -z "$1" ]
   then
@@ -211,7 +213,7 @@ _venv_clean()
 {
   local virtualenv_dir
 
-  virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+  virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
   if [ -z "$virtualenv_dir" ]
   then
@@ -300,7 +302,7 @@ _venv_deactivate()
     local virtualenv_dir
     local override=0
 
-    virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+    virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
     if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
     then
@@ -388,9 +390,10 @@ _venv_copy()
   fi
 }
 
-_venv_raw_list()
+__venv_simple_list()
 {
-  local  virtualenv_name
+  local virtualenv_name
+  IFS=$'\n'
   for dir in $(find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d)
   do
     if [ -f "$dir/bin/activate" ]
@@ -399,19 +402,25 @@ _venv_raw_list()
       echo "$virtualenv_name"
     fi
   done
+  unset IFS
 }
 
 _venv_list()
 {
-  echo "virtualenvs found in $VIRTUAL_ENV_HOME"
-  for dir in $(find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d)
+  virtualenvs=$(__venv_simple_list)
+  if [ -z "$virtualenvs" ]
+  then
+    echo -e "${blue}venv: no virtualenvs were found in $VIRTUAL_ENV_HOME${no_color}"
+    return  1
+  fi
+
+  echo -e "${green}virtualenvs found in $VIRTUAL_ENV_HOME${no_color}"
+  IFS=$'\n'
+  for virtualenv in $(__venv_simple_list)
   do
-    if [ -f "$dir/bin/activate" ]
-    then
-      virtualenv_name=$(basename "$dir")
-      echo "* $virtualenv_name"
-    fi
+    echo "* $virtualenv"
   done
+  unset IFS
 }
 
 _venv_inspect()
@@ -419,7 +428,7 @@ _venv_inspect()
   local virtualenv
   local virtualenv_dir
 
-  virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+  virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
   if [ ! -z "$1" ]
   then
@@ -452,7 +461,7 @@ _venv_inspect()
 #   the directory containing the .virtualenv file or nothing if a suitable
 #   location was not found
 ###############################################################################
-_venv_find_virtualenv_file()
+__venv_find_virtualenv_file()
 {
   local test_directory=$1
   while [ "$test_directory" != "/" ]
@@ -483,7 +492,7 @@ _venv_completion()
       opts="init clean create activate deactivate remove copy list inspect"
       ;;
     activate|inspect|remove|init|copy)
-      opts=$(_venv_raw_list)
+      opts=$(__venv_simple_list)
       ;;
     *)
       opts=""
