@@ -332,6 +332,12 @@ _venv_deactivate()
 
 _venv_remove()
 {
+  if [ -z "$1" ]
+  then
+    echo -e "${blue}usage: venv remove <name>${no_color}"
+    return 1
+  fi
+
   local virtualenv=$1
 
   # Remove the virtualenv and all its related files
@@ -352,6 +358,12 @@ _venv_remove()
 
 _venv_copy()
 {
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    echo -e "${blue}usage: venv copy <source_name> <destination_name>${no_color}"
+    return 1
+  fi
+
   local virtualenv=$1
   local destination=$2
 
@@ -396,7 +408,22 @@ _venv_list()
 
 _venv_inspect()
 {
-  local virtualenv=$1
+  local virtualenv
+  local virtualenv_dir
+
+  virtualenv_dir=$(_venv_find_virtualenv_file "$(pwd)")
+
+  if [ ! -z "$1" ]
+  then
+    virtualenv=$1
+    shift
+  elif [ ! -z "$virtualenv_dir" ]
+  then
+    virtualenv=$(cat "$virtualenv_dir/.virtualenv")
+  else
+    echo -e "${red}venv: no virtualenv specified or found in a .virtualenv file${no_color}"
+    return 1
+  fi
 
   # Change into the virtualenv directory
   if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
