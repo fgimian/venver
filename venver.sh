@@ -357,7 +357,7 @@ _venv_remove()
 # Makes a copy of a virtualenv
 _venv_copy()
 {
-  virtualenv_clone_check=$(hash virtualenv-clone 2> /dev/null)
+  hash virtualenv-clone 2> /dev/null
   if [ $? -ne 0 ]
   then
     echo -e "${red}error: virtualenv-clone is required for the copy command to work"
@@ -404,6 +404,8 @@ __venv_simple_list()
 # Lists all virtualenvs that are available
 _venv_list()
 {
+  local virtualenv_dir
+
   virtualenvs=$(__venv_simple_list)
   if [ -z "$virtualenvs" ]
   then
@@ -417,7 +419,16 @@ _venv_list()
   do
     if [ ! -z "$VIRTUAL_ENV" ] && [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
     then
-      echo -e "${green}* $virtualenv${no_color}"
+      echo -e -n "${green}* $virtualenv "
+      if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+      then
+        echo -e -n "(manually managed)"
+      else
+        virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
+        virtualenv_dir=${virtualenv_dir/$HOME/\~}
+        echo -e -n "(as defined in $virtualenv_dir/.virtualenv)"
+      fi
+      echo -e "${no_color}"
     else
       echo -e "  $virtualenv"
     fi
