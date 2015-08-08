@@ -67,7 +67,8 @@ venv()
 
 $(echo -e "$blue")Usage: venv <command> [<args>]$(echo -e "$no_color")
 
-$(echo -e "$cyan")Automatically manage virtualenvs for projects:$(echo -e "$no_color")
+$(echo -e "$cyan")Automatically manage virtualenvs for \
+projects:$(echo -e "$no_color")
 
     init          Initialise and create a virtualenv for the current project
     clean         Remove the virtualenv assigned to the current project
@@ -114,7 +115,8 @@ cd()
     local virtualenv_dir
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    # If the .virtualenv file was found, we ensure that the environment is activated
+    # If the .virtualenv file was found, we ensure that the environment is
+    # activated
     if [ ! -z "$virtualenv_dir" ]
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
@@ -123,12 +125,13 @@ cd()
         then
             source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
         else
-            echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, use 'venv init' to create it${no_color}"
+            echo -e "${red}venv: the virtualenv $virtualenv doesn't exist,"\
+                    "use 'venv init' to create it${no_color}"
             return 1
         fi
     else
-        # If no virtualenv was found and one is already activated, we deactivate
-        # it for the user
+        # If no virtualenv was found and one is already activated, we
+        # deactivate it for the user
         if [ ! -z "$VIRTUAL_ENV" ] && [[ $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]
         then
             deactivate
@@ -182,7 +185,8 @@ _venv_init()
     then
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
     else
-        echo -e "${blue}venv: a virtualenv has been activated manually, please deactivate it to enable $virtualenv${no_color}"
+        echo -e "${blue}venv: a virtualenv has been activated manually,"\
+                "please deactivate it to enable $virtualenv${no_color}"
         return 1
     fi
 }
@@ -196,7 +200,8 @@ _venv_clean()
 
     if [ -z "$virtualenv_dir" ]
     then
-        echo -e "${red}venv: no virtualenv was found in a .virtualenv file${no_color}"
+        echo -e "${red}venv: no virtualenv was found in a .virtualenv"\
+                "file${no_color}"
         return 1
     fi
 
@@ -206,7 +211,8 @@ _venv_clean()
          [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ] && \
          [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
     then
-        echo -e "${red}venv: the project's virtualenv has been manually activated, unable to continue${no_color}"
+        echo -e "${red}venv: the project's virtualenv has been manually"\
+                "activated, unable to continue${no_color}"
         return 1
     fi
 
@@ -234,7 +240,8 @@ _venv_create()
 
     if [ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]
     then
-        echo -e "${red}venv: the virtualenv $virtualenv already exists, aborting${no_color}"
+        echo -e "${red}venv: the virtualenv $virtualenv already exists,"\
+                "aborting${no_color}"
         return 1
     fi
 
@@ -262,7 +269,8 @@ _venv_activate()
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
         export VIRTUAL_ENV_OVERRIDE=1
     else
-        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to activate${no_color}"
+        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable"\
+                "to activate${no_color}"
         return 1
     fi
 }
@@ -285,7 +293,8 @@ _venv_deactivate()
             export VIRTUAL_ENV_OVERRIDE=0
         fi
 
-        # If the .virtualenv file was found, we ensure that environment stays activated
+        # If the .virtualenv file was found, we ensure that environment stays
+        # activated
         if [ ! -z "$virtualenv_dir" ]
         then
             virtualenv=$(cat "$virtualenv_dir/.virtualenv")
@@ -294,12 +303,16 @@ _venv_deactivate()
                 source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
                 if [ $override -eq 1 ]
                 then
-                    echo -e "${blue}venv: reverting to the virtualenv $virtualenv as defined in the .virtualenv file${no_color}"
+                    echo -e "${blue}venv: reverting to the virtualenv"\
+                            "$virtualenv as defined in the .virtualenv"\
+                            "file${no_color}"
                 else
-                    echo -e "${red}venv: a .virtualenv file was found; unable to deactivate${no_color}"
+                    echo -e "${red}venv: a .virtualenv file was found; unable"\
+                            "to deactivate${no_color}"
                 fi
             else
-                echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to activate${no_color}"
+                echo -e "${red}venv: the virtualenv $virtualenv doesn't"\
+                        "exist, unable to activate${no_color}"
                 return 1
             fi
         fi
@@ -342,12 +355,15 @@ _venv_remove()
 
             if [ ! -z "$virtualenv_dir" ]
             then
-                echo -e "${blue}venv: removing virtualenv which was specified in a .virtualenv file, use 'venv init' to recreate${no_color}"
+                echo -e "${blue}venv: removing virtualenv which was specified"\
+                        "in a .virtualenv file, use 'venv init' to"\
+                        "recreate${no_color}"
             fi
 
             rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
         else
-            echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to remove${no_color}"
+            echo -e "${red}venv: the virtualenv $virtualenv doesn't exist,"\
+                    "unable to remove${no_color}"
             return_code=1
         fi
     done
@@ -361,13 +377,15 @@ _venv_copy()
     hash virtualenv-clone 2> /dev/null
     if [ $? -ne 0 ]
     then
-        echo -e "${red}Error: virtualenv-clone is required for the copy command to work${no_color}"
+        echo -e "${red}Error: virtualenv-clone is required for the copy"\
+                "command to work${no_color}"
         return 1
     fi
 
     if [ -z "$1" ] || [ -z "$2" ]
     then
-        echo -e "${blue}Usage: venv copy <source_name> <destination_name>${no_color}"
+        echo -e "${blue}Usage: venv copy <source_name>"\
+                "<destination_name>${no_color}"
         return 1
     fi
 
@@ -376,13 +394,15 @@ _venv_copy()
 
     if [ -d "$VIRTUAL_ENV_HOME/$destination" ]
     then
-        echo -e "${red}venv: he destination virtualenv $destination already exists, aborting${no_color}"
+        echo -e "${red}venv: he destination virtualenv $destination already"\
+                "exists, aborting${no_color}"
         return 1
     elif [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
     then
         virtualenv-clone "$VIRTUAL_ENV_HOME/$virtualenv" "$VIRTUAL_ENV_HOME/$destination"
     else
-        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to change directory${no_color}"
+        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable"\
+                "to change directory${no_color}"
         return 1
     fi
 }
@@ -410,7 +430,8 @@ _venv_list()
     virtualenvs=$(__venv_simple_list)
     if [ -z "$virtualenvs" ]
     then
-        echo -e "${blue}venv: no virtualenvs were found in $VIRTUAL_ENV_HOME${no_color}"
+        echo -e "${blue}venv: no virtualenvs were found in"\
+                "$VIRTUAL_ENV_HOME${no_color}"
         return  1
     fi
 
@@ -418,7 +439,8 @@ _venv_list()
     IFS=$'\n'
     for virtualenv in $(__venv_simple_list)
     do
-        if [ ! -z "$VIRTUAL_ENV" ] && [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
+        if [ ! -z "$VIRTUAL_ENV" ] && \
+           [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
         then
             echo -e -n "${green}* $virtualenv "
             if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
@@ -453,7 +475,8 @@ _venv_base()
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
     else
-        echo -e "${red}venv: no virtualenv specified or found in a .virtualenv file${no_color}"
+        echo -e "${red}venv: no virtualenv specified or found in a"\
+                ".virtualenv file${no_color}"
         return 1
     fi
 
@@ -462,7 +485,8 @@ _venv_base()
     then
         cd "$VIRTUAL_ENV_HOME/$virtualenv"
     else
-        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to change directory${no_color}"
+        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable"\
+                "to change directory${no_color}"
         return 1
     fi
 }
@@ -483,7 +507,8 @@ _venv_site()
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
     else
-        echo -e "${red}venv: no virtualenv specified or found in a .virtualenv file${no_color}"
+        echo -e "${red}venv: no virtualenv specified or found in a"\
+                ".virtualenv file${no_color}"
         return 1
     fi
 
@@ -493,7 +518,8 @@ _venv_site()
         site_packages_dir=$("$VIRTUAL_ENV_HOME/$virtualenv/bin/python" -c "import distutils; print(distutils.sysconfig.get_python_lib())")
         cd "$site_packages_dir"
     else
-        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to change directory${no_color}"
+        echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable"\
+                "to change directory${no_color}"
         return 1
     fi
 }
