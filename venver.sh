@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # ...~\ venver /~...
+#   (bash and zsh)
 #
 # Simple virtualenv management and auto-switching
 # (https://github.com/fgimian/venver)
@@ -50,6 +51,8 @@ no_color='\033[0m'
 # appropriate function based on user input
 venv()
 {
+    local action
+
     # Create the virtualenv home if it doesn't exist already
     if [ ! -d "$VIRTUAL_ENV_HOME" ]
     then
@@ -432,7 +435,7 @@ _venv_list()
     then
         echo -e "${blue}venv: no virtualenvs were found in"\
                 "$VIRTUAL_ENV_HOME${no_color}"
-        return  1
+        return 1
     fi
 
     echo -e "${cyan}virtualenvs found in $VIRTUAL_ENV_HOME${no_color}"
