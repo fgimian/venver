@@ -85,10 +85,12 @@ venv clean  # while in the myproject directory, this will delete the myproject
 ## Bugs ##
 
 * Auto-complete of virtualenvs with spaces doesn't work correctly
-* Initialising a virtualenv without a name doesn't allow you to send options to 
-  virtualenv
+* Initialising a virtualenv without a name doesn't allow you to send options
+  to virtualenv
+* Fish autocomplete is a little inaccurate
 
 ## Current Plans ##
 
 * Unit tests using bats
-* Possibly support for zsh and fish in the near future
+* Support for zsh
+* Autocomplete for virtualenv options (if possible)
