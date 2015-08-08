@@ -17,35 +17,48 @@ box.
 soucre venver.sh
 
 # Create a virtualenv for the current project (enabling auto-activation)
+mkdir myproject
 cd myproject
 venv init
-cat .virtualenv
+cat .virtualenv  # contains 'myproject'
 
 # List the virtualenvs available
 venv list
 
 # Navigating out of and into the project directory will deactivate and activate
 # the virtualenv respectively
-cd ..
-cd myproject
-cd ..
+cd ..         # deactivates the my project virtualenv
+cd myproject  # activates the myproject virtualenv
+cd ..         # deactivates the my project virtualenv
 
-# You may also create a virtualenv without binding it to a project
+# You may also create a virtualenv without binding it to a project, this will
+# always override your current project virtualenv until you deactiavte it
 venv create my_venv
-deactivate
-venv activate myenv
+cd myproject           # the my_venv virtualenv will continue to be activated
+venv deactivate        # my_env is deactivated and the project virtualenv is activated
+venv activate my_venv  # re-activate your non-project virtualenv to force override again
 
-# You may jump straight into a virtualenv root directory using cd
-venv cd my_venv
+# You may jump straight into a virtualenv root directory using inspect
+venv inspect my_venv
 
 # If a virtualenv is active, you may cd into it without specifying the name
-venv cd
+cd -
+venv inspect
 
 # You may also copy a virtualenv to a new name
 venv copy my_venv new_venv
 
-# Finally, you may remove any virtualenv you like
+# Finally, you may remove any virtualenv you like (if active, it will be 
+# deactivated for you)
 venv remove my_venv
+
+# You may also remove a project virtualenv and its binding
+mkdir myproject_subdir
+cd myproject_subdir
+venv clean  # while in the myproject directory, this will delete the myproject 
+            # virtualenv and the related .virtualenv file (venver is smart 
+            # enough to deal with being in a sub-directory of the project 
+            # while doing this)
 ```
 
 ## Current Plans ##
