@@ -89,7 +89,7 @@ EOF
     if [ ! -z "$1" ]
     then
       echo -e "${red}venv: unsupported command $1${no_color}"
-      echo ""
+      echo -e ""
     fi
     return 1
   fi
@@ -181,7 +181,7 @@ _venv_init()
   then
     source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
   else
-    echo "${blue}venv: a virtualenv has been activated manually, please deactivate it to enable $virtualenv${no_color}"
+    echo -e "${blue}venv: a virtualenv has been activated manually, please deactivate it to enable $virtualenv${no_color}"
     return 1
   fi
 }
@@ -357,6 +357,13 @@ _venv_remove()
 # Makes a copy of a virtualenv
 _venv_copy()
 {
+  virtualenv_clone_check=$(hash virtualenv-clone 2> /dev/null)
+  if [ $? -ne 0 ]
+  then
+    echo -e "${red}error: virtualenv-clone is required for the copy command to work"
+    return 1
+  fi
+
   if [ -z "$1" ] || [ -z "$2" ]
   then
     echo -e "${blue}usage: venv copy <source_name> <destination_name>${no_color}"
@@ -412,7 +419,7 @@ _venv_list()
     then
       echo -e "${green}* $virtualenv${no_color}"
     else
-      echo "  $virtualenv"
+      echo -e "  $virtualenv"
     fi
   done
   unset IFS
