@@ -45,15 +45,8 @@ green='\033[0;32m'
 blue='\033[0;34m'
 no_color='\033[0m'
 
-###############################################################################
 # The main entrypoint into venv which displays usage information or runs the
 # appropriate function based on user input
-#
-# Globals:
-#   VIRTUAL_ENV_HOME: the directory containing all virtualenvs
-# Arguments:
-#   command: the venv command to run
-###############################################################################
 venv()
 {
   # Create the virtualenv home if it doesn't exist already
@@ -104,15 +97,7 @@ EOF
   "_venv_$action" "$@"
 }
 
-###############################################################################
 # Automatic activation and deactivation of virtualenvs with venver
-#
-# Globals:
-#   VIRTUAL_ENV: the currently activated virtualenv
-#   VIRTUAL_ENV_HOME: the directory containing all virtualenvs
-# Arguments:
-#   accepts all arguments that the regular builtin cd command accepts
-###############################################################################
 cd()
 {
   # Perform the regular cd
@@ -149,16 +134,7 @@ cd()
   fi
 }
 
-###############################################################################
 # Creates a new virtualenv (if required), activates it and enables the
-# virtualenv to be used by this directory
-#
-# Globals:
-#   VIRTUAL_ENV_HOME: the directory containing all virtualenvs
-# Arguments:
-#   virtualenv (optional): a virtualenv to activate if one hasn't been defined
-#                          in a .virtualenv file
-###############################################################################
 _venv_init()
 {
   local virtualenv
@@ -209,6 +185,7 @@ _venv_init()
   fi
 }
 
+# Removes a project's virtualenv and related .virtualenv file
 _venv_clean()
 {
   local virtualenv_dir
@@ -237,10 +214,11 @@ _venv_clean()
     deactivate
   fi
 
-  _venv_remove "$virtualenv"
+  rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
   rm -f "$virtualenv_dir/.virtualenv"
 }
 
+# Creates a new self-managed virtualenv with the given name
 _venv_create()
 {
   if [ -z "$1" ]
@@ -261,18 +239,11 @@ _venv_create()
   virtualenv "$@" "$VIRTUAL_ENV_HOME/$virtualenv"
   if [ $? -eq 0 ]
   then
-    _venv_activate "$virtualenv"
+    source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
   fi
 }
 
-###############################################################################
 # Activates the nearest virtualenv or one provided
-#
-# Globals:
-#   VIRTUAL_ENV_HOME: the directory containing all virtualenvs
-# Arguments:
-#   virtualenv: a virtualenv to manually activate
-###############################################################################
 _venv_activate()
 {
   if [ -z "$1" ]
@@ -294,6 +265,7 @@ _venv_activate()
   fi
 }
 
+# Deactivates a self-managed virtualenv
 _venv_deactivate()
 {
   if [ ! -z "$VIRTUAL_ENV" ]
@@ -335,6 +307,7 @@ _venv_deactivate()
   fi
 }
 
+# Deletes a self-managed virtualenv
 _venv_remove()
 {
   if [ -z "$1" ]
@@ -345,6 +318,7 @@ _venv_remove()
 
   local return_code
   local virtualenv
+  local virtualenv_dir
 
   # Remove the virtualenv and all its related files
   return_code=0
@@ -362,6 +336,13 @@ _venv_remove()
         deactivate
       fi
 
+      virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
+
+      if [ ! -z "$virtualenv_dir" ]
+      then
+        echo -e "${blue}venv: removing virtualenv which was specified in a .virtualenv file, use 'venv init' to recreate${no_color}"
+      fi
+
       rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
     else
       echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to remove${no_color}"
@@ -372,6 +353,7 @@ _venv_remove()
   return $return_code
 }
 
+# Makes a copy of a virtualenv
 _venv_copy()
 {
   if [ -z "$1" ] || [ -z "$2" ]
@@ -396,6 +378,7 @@ _venv_copy()
   fi
 }
 
+# Provides a plain listing of virtualenvs
 __venv_simple_list()
 {
   local virtualenv_name
@@ -410,6 +393,7 @@ __venv_simple_list()
   done < <(find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
+# Lists all virtualenvs that are available
 _venv_list()
 {
   virtualenvs=$(__venv_simple_list)
@@ -428,6 +412,7 @@ _venv_list()
   unset IFS
 }
 
+# Changes into the base directory of a virtualenv
 _venv_inspect()
 {
   local virtualenv
@@ -457,15 +442,7 @@ _venv_inspect()
   fi
 }
 
-###############################################################################
 # Attempts to find the nearest .virtualenv file
-#
-# Arguments:
-#   dir: the directory to search
-# Returns:
-#   the directory containing the .virtualenv file or nothing if a suitable
-#   location was not found
-###############################################################################
 __venv_find_virtualenv_file()
 {
   local test_directory=$1
@@ -486,6 +463,7 @@ __venv_find_virtualenv_file()
   fi
 }
 
+# Bash completion for venver
 _venv_completion()
 {
   local cur prev opts
