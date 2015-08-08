@@ -10,6 +10,24 @@ similarities to virtualenvwrapper but attempts to be much simpler, not polute
 the command line with various commands and provide auto-switching out of the
 box.
 
+## Why Another Tool? ##
+
+Both [virtualenvwrapper](https://bitbucket.org/dhellmann/virtualenvwrapper) and
+[pyenv-virtualenv](https://github.com/yyuu/pyenv-virtualenv) greatly inspired 
+this tool.  I highly encourage everyone to try all these tools and chose the one
+that best fits their needs.  I'm particularly fond of all the pyenv projects.
+
+However, there are reasons that I wanted to develop my own library.
+
+* virtualenvwrapper doesn't centralise its commands and pollutes your shell 
+  with a huge number of bash functions.  It also doesn't offer auto-switching
+  out of the box.
+* pyenv-virtualenv was much much closer to what I was after and is a really
+  awesome project as is pyenv.  However, I do find that I often use system
+  provided Python in most cases in my work and the fact that pyenv-virtualenv
+  is a plugin to pyenv means that help is not as easy to get to.  venver is a
+  more focused tool on this particular task.
+
 ## Quick Start ##
 
 ```bash
@@ -61,9 +79,14 @@ venv clean  # while in the myproject directory, this will delete the myproject
             # while doing this)
 ```
 
+## Bugs ##
+
+* Auto-complete of virtualenvs with spaces doesn't work correctly
+* Initialising a virtualenv without a name doesn't allow you to send options to 
+  virtualenv
+
 ## Current Plans ##
 
-* A very robust and solid system for performing all actions above
-* Full bash completion forthcoming
+* Allow users to inspect the site-packages directory
 * Unit tests using bats
 * Possibly support for zsh and fish in the near future
