@@ -343,27 +343,33 @@ _venv_remove()
     return 1
   fi
 
+  local return_code
   local virtualenv
-  virtualenv=$1
 
   # Remove the virtualenv and all its related files
-  if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
-  then
-    if [ ! -z "$VIRTUAL_ENV" ] && \
-       [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]
+  return_code=0
+  for virtualenv in "$@"
+  do
+    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
     then
-      if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+      if [ ! -z "$VIRTUAL_ENV" ] && \
+         [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]
       then
-        export VIRTUAL_ENV_OVERRIDE=0
+        if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+        then
+          export VIRTUAL_ENV_OVERRIDE=0
+        fi
+        deactivate
       fi
-      deactivate
-    fi
 
-    rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
-  else
-    echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to remove${no_color}"
-    return 1
-  fi
+      rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
+    else
+      echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to remove${no_color}"
+      return_code=1
+    fi
+  done
+
+  return $return_code
 }
 
 _venv_copy()
@@ -485,6 +491,7 @@ _venv_completion()
   local cur prev opts
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
+  command="${COMP_WORDS[1]}"
 
   case $prev in
     venv)
@@ -494,7 +501,13 @@ _venv_completion()
       opts=$(__venv_simple_list)
       ;;
     *)
-      opts=""
+      # Support deletion of multiple virtualenvs at the same time
+      if [ "$command" = "remove" ]
+      then
+        opts=$(__venv_simple_list)
+      else
+        opts=""
+      fi
       ;;
   esac
 
