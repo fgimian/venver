@@ -87,6 +87,5 @@ venv clean  # while in the myproject directory, this will delete the myproject
 
 ## Current Plans ##
 
-* Allow users to inspect the site-packages directory
 * Unit tests using bats
 * Possibly support for zsh and fish in the near future

@@ -55,8 +55,12 @@ venv()
     mkdir -p "$VIRTUAL_ENV_HOME"
   fi
 
+  # Obtain the action and then remove it from the argument list
+  action=$1
+  shift
+
   # Display help if no command or an invalid command was provided
-  if [ -z "$1" ] || [ "$(type -t _venv_"$1")" != "function" ]
+  if [ -z "$action" ] || [ "$(type -t _venv_"$action")" != "function" ]
   then
     cat << EOF
 
@@ -78,7 +82,8 @@ General:
 
     copy        Make a copy of a virtualenv
     list        List all available virtualenvs
-    inspect     Change into the directory of a virtualenv
+    base        Change into the base directory of a virtualenv
+    site        Change into the site-packages directory of a virtualenv
 
 EOF
     if [ ! -z "$1" ]
@@ -88,10 +93,6 @@ EOF
     fi
     return 1
   fi
-
-  # Obtain the action and then remove it from the argument list
-  action=$1
-  shift
 
   # Call the requested command
   "_venv_$action" "$@"
@@ -407,7 +408,7 @@ _venv_list()
   IFS=$'\n'
   for virtualenv in $(__venv_simple_list)
   do
-    if [ ! -z $VIRTUAL_ENV ] && [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
+    if [ ! -z "$VIRTUAL_ENV" ] && [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
     then
       echo -e "${green}* $virtualenv${no_color}"
     else
@@ -418,7 +419,7 @@ _venv_list()
 }
 
 # Changes into the base directory of a virtualenv
-_venv_inspect()
+_venv_base()
 {
   local virtualenv
   local virtualenv_dir
@@ -441,6 +442,37 @@ _venv_inspect()
   if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
   then
     cd "$VIRTUAL_ENV_HOME/$virtualenv"
+  else
+    echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to change directory${no_color}"
+    return 1
+  fi
+}
+
+# Changes into the site-packages directory of a virtualenv
+_venv_site()
+{
+  local virtualenv
+  local virtualenv_dir
+
+  virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
+
+  if [ ! -z "$1" ]
+  then
+    virtualenv=$1
+    shift
+  elif [ ! -z "$virtualenv_dir" ]
+  then
+    virtualenv=$(cat "$virtualenv_dir/.virtualenv")
+  else
+    echo -e "${red}venv: no virtualenv specified or found in a .virtualenv file${no_color}"
+    return 1
+  fi
+
+  # Change into the virtualenv directory
+  if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+  then
+    site_packages_dir=$("$VIRTUAL_ENV_HOME/$virtualenv/bin/python" -c "import distutils; print(distutils.sysconfig.get_python_lib())")
+    cd "$site_packages_dir"
   else
     echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to change directory${no_color}"
     return 1
@@ -478,9 +510,9 @@ _venv_completion()
 
   case $prev in
     venv)
-      opts="init clean create activate deactivate remove copy list inspect"
+      opts="init clean create activate deactivate remove copy list base site"
       ;;
-    activate|inspect|remove|init|copy)
+    activate|base|site|remove|init|copy)
       opts=$(__venv_simple_list)
       ;;
     *)
