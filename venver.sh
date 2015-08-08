@@ -180,10 +180,10 @@ _venv_init()
     virtualenv_dir="$(pwd)"
   fi
 
-  # Create the virtualenv or activate it if it exists
+  # Create the virtualenv
   if [ ! -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
   then
-    _venv_create "$virtualenv" "$@"
+    virtualenv "$@" "$VIRTUAL_ENV_HOME/$virtualenv"
     if [ $? -ne 0 ]
     then
       return $?
