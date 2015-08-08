@@ -279,6 +279,9 @@ _venv_activate()
     return 1
   fi
 
+  local virtualenv
+  virtualenv=$1
+
   if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
   then
     source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
@@ -338,7 +341,8 @@ _venv_remove()
     return 1
   fi
 
-  local virtualenv=$1
+  local virtualenv
+  virtualenv=$1
 
   # Remove the virtualenv and all its related files
   if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
@@ -346,6 +350,10 @@ _venv_remove()
     if [ ! -z "$VIRTUAL_ENV" ] && \
        [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]
     then
+      if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+      then
+        export VIRTUAL_ENV_OVERRIDE=0
+      fi
       deactivate
     fi
 
