@@ -67,7 +67,7 @@ venv()
   then
     cat << EOF
 
-$(echo -e $blue)usage: venv <command> [<args>]$(echo -e $no_color)
+$(echo -e "$blue")usage: venv <command> [<args>]$(echo -e "$no_color")
 
 Automatically managing projects:
 
@@ -359,7 +359,7 @@ _venv_remove()
       deactivate
     fi
 
-    rm -rf "$VIRTUAL_ENV_HOME/$virtualenv"
+    rm -rf "${VIRTUAL_ENV_HOME:?}/$virtualenv"
   else
     echo -e "${red}venv: the virtualenv $virtualenv doesn't exist, unable to remove${no_color}"
     return 1
@@ -393,16 +393,15 @@ _venv_copy()
 __venv_simple_list()
 {
   local virtualenv_name
-  IFS=$'\n'
-  for dir in $(find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d)
+
+  while IFS= read -r -d '' dir
   do
     if [ -f "$dir/bin/activate" ]
     then
       virtualenv_name=$(basename "$dir")
       echo "$virtualenv_name"
     fi
-  done
-  unset IFS
+  done < <(find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
 _venv_list()
