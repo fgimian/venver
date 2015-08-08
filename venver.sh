@@ -414,7 +414,7 @@ _venv_list()
         return  1
     fi
 
-    echo -e "${green}virtualenvs found in $VIRTUAL_ENV_HOME${no_color}"
+    echo -e "${cyan}virtualenvs found in $VIRTUAL_ENV_HOME${no_color}"
     IFS=$'\n'
     for virtualenv in $(__venv_simple_list)
     do
