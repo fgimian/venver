@@ -29,13 +29,13 @@
 # THE SOFTWARE.
 
 # Disable virtualenv override by default
-if [ -z "$VIRTUAL_ENV_OVERRIDE" ]
+if [[ -z $VIRTUAL_ENV_OVERRIDE ]]
 then
     export VIRTUAL_ENV_OVERRIDE=0
 fi
 
 # Set the virtualenv home if not set already
-if [ -z "$VIRTUAL_ENV_HOME" ]
+if [[ -z $VIRTUAL_ENV_HOME ]]
 then
     export VIRTUAL_ENV_HOME=$HOME/.virtualenvs
 fi
@@ -52,7 +52,7 @@ no_color='\033[0m'
 venv()
 {
     # Create the virtualenv home if it doesn't exist already
-    if [ ! -d "$VIRTUAL_ENV_HOME" ]
+    if [[ ! -d $VIRTUAL_ENV_HOME ]]
     then
         mkdir -p "$VIRTUAL_ENV_HOME"
     fi
@@ -64,7 +64,7 @@ venv()
     # Display help if no command or an invalid command was provided
     declare -f "_venv_${action}" > /dev/null
     command_found=$?
-    if [ -z "$action" ] || [ $command_found -ne 0 ]
+    if [[ -z $action || $command_found -ne 0 ]]
     then
         echo -e "${blue}Usage: venv <command> [<args>]${no_color}
 
@@ -89,7 +89,7 @@ ${cyan}General:${no_color}
 
 Please see https://github.com/fgimian/venver for more information"
 
-        if [ ! -z "$action" ]
+        if [[ ! -z $action ]]
         then
             echo -e "${red}venv: unsupported command ${action}${no_color}"
         fi
@@ -107,7 +107,7 @@ cd()
     builtin cd "$@"
 
     # If the user is controlling their virtualenvs, we don't do anything
-    if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+    if [[ $VIRTUAL_ENV_OVERRIDE -eq 1 ]]
     then
         return
     fi
@@ -117,11 +117,11 @@ cd()
 
     # If the .virtualenv file was found, we ensure that the environment is
     # activated
-    if [ ! -z "$virtualenv_dir" ]
+    if [[ ! -z $virtualenv_dir ]]
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
 
-        if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+        if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
         then
             source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
         else
@@ -132,7 +132,7 @@ cd()
     else
         # If no virtualenv was found and one is already activated, we
         # deactivate it for the user
-        if [ ! -z "$VIRTUAL_ENV" ] && [[ $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]
+        if [[ ! -z $VIRTUAL_ENV && $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]
         then
             deactivate
         fi
@@ -147,41 +147,41 @@ _venv_init()
 
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    if [ ! -z "$1" ]
+    if [[ ! -z $1 ]]
     then
         virtualenv=$1
         shift
-    elif [ ! -z "$virtualenv_dir" ]
+    elif [[ ! -z $virtualenv_dir ]]
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
     else
         virtualenv=$(basename "$(pwd)")
     fi
 
-    if [ -z "$virtualenv_dir" ]
+    if [[ -z $virtualenv_dir ]]
     then
         virtualenv_dir="$(pwd)"
     fi
 
     # Create the virtualenv
-    if [ ! -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+    if [[ ! -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
     then
         virtualenv "$@" "$VIRTUAL_ENV_HOME/$virtualenv"
-        if [ $? -ne 0 ]
+        if [[ $? -ne 0 ]]
         then
             return $?
         fi
     fi
 
     # Add it to the project's .virtualenv file if necessary
-    if [ ! -f "$virtualenv_dir/.virtualenv" ] || \
-         [ "$(cat "$virtualenv_dir/.virtualenv")" != "$virtualenv" ]
+    if [[ ! -f "$virtualenv_dir/.virtualenv" ||
+          $virtualenv != $(cat "$virtualenv_dir/.virtualenv") ]]
     then
         echo "$virtualenv" > "${virtualenv_dir}/.virtualenv"
     fi
 
     # Activate the virtualenv
-    if [ $VIRTUAL_ENV_OVERRIDE -eq 0 ]
+    if [[ $VIRTUAL_ENV_OVERRIDE -eq 0 ]]
     then
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
     else
@@ -198,7 +198,7 @@ _venv_clean()
 
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    if [ -z "$virtualenv_dir" ]
+    if [[ -z $virtualenv_dir ]]
     then
         echo -e "${red}venv: no virtualenv was found in a .virtualenv"\
                 "file${no_color}"
@@ -207,17 +207,17 @@ _venv_clean()
 
     virtualenv=$(cat "$virtualenv_dir/.virtualenv")
 
-    if [ ! -z "$VIRTUAL_ENV" ] && \
-         [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ] && \
-         [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+    if [[ ! -z $VIRTUAL_ENV &&
+          $VIRTUAL_ENV == "$VIRTUAL_ENV_HOME/$virtualenv" &&
+          $VIRTUAL_ENV_OVERRIDE -eq 1 ]]
     then
         echo -e "${red}venv: the project's virtualenv has been manually"\
                 "activated, unable to continue${no_color}"
         return 1
     fi
 
-    if [ ! -z "$VIRTUAL_ENV" ] && \
-         [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]
+    if [[ ! -z $VIRTUAL_ENV &&
+         "$VIRTUAL_ENV" == "$VIRTUAL_ENV_HOME/$virtualenv" ]]
     then
         deactivate
     fi
@@ -229,7 +229,7 @@ _venv_clean()
 # Creates a new self-managed virtualenv with the given name
 _venv_create()
 {
-    if [ -z "$1" ]
+    if [[ -z $1 ]]
     then
         echo -e "${blue}Usage: venv create <name>${no_color}"
         return 1
@@ -238,7 +238,7 @@ _venv_create()
     local virtualenv=$1
     shift
 
-    if [ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]
+    if [[ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]]
     then
         echo -e "${red}venv: the virtualenv ${virtualenv} already exists,"\
                 "aborting${no_color}"
@@ -246,7 +246,7 @@ _venv_create()
     fi
 
     virtualenv "$@" "$VIRTUAL_ENV_HOME/$virtualenv"
-    if [ $? -eq 0 ]
+    if [[ $? -eq 0 ]]
     then
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
         export VIRTUAL_ENV_OVERRIDE=1
@@ -256,7 +256,7 @@ _venv_create()
 # Activates the nearest virtualenv or one provided
 _venv_activate()
 {
-    if [ -z "$1" ]
+    if [[ -z $1 ]]
     then
         echo -e "${blue}Usage: venv create <name>${no_color}"
         return 1
@@ -264,7 +264,7 @@ _venv_activate()
 
     local virtualenv=$1
 
-    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+    if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
     then
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
         export VIRTUAL_ENV_OVERRIDE=1
@@ -278,7 +278,7 @@ _venv_activate()
 # Deactivates a self-managed virtualenv
 _venv_deactivate()
 {
-    if [ ! -z "$VIRTUAL_ENV" ]
+    if [[ ! -z $VIRTUAL_ENV ]]
     then
         local virtualenv
         local virtualenv_dir
@@ -286,7 +286,7 @@ _venv_deactivate()
 
         virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-        if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+        if [[ $VIRTUAL_ENV_OVERRIDE -eq 1 ]]
         then
             override=1
             deactivate
@@ -295,13 +295,13 @@ _venv_deactivate()
 
         # If the .virtualenv file was found, we ensure that environment stays
         # activated
-        if [ ! -z "$virtualenv_dir" ]
+        if [[ ! -z $virtualenv_dir ]]
         then
             virtualenv=$(cat "$virtualenv_dir/.virtualenv")
-            if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+            if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
             then
                 source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
-                if [ $override -eq 1 ]
+                if [[ $override -eq 1 ]]
                 then
                     echo -e "${blue}venv: reverting to the virtualenv"\
                             "${virtualenv} as defined in the .virtualenv"\
@@ -325,7 +325,7 @@ _venv_deactivate()
 # Deletes a self-managed virtualenv
 _venv_remove()
 {
-    if [ -z "$1" ]
+    if [[ -z "$1" ]]
     then
         echo -e "${blue}Usage: venv remove <name>${no_color}"
         return 1
@@ -338,12 +338,12 @@ _venv_remove()
     # Remove the virtualenv and all its related files
     for virtualenv in "$@"
     do
-        if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+        if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
         then
-            if [ ! -z "$VIRTUAL_ENV" ] && \
-                 [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]
+            if [[ ! -z "$VIRTUAL_ENV" &&
+                  $VIRTUAL_ENV == "$VIRTUAL_ENV_HOME/$virtualenv" ]]
             then
-                if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+                if [[ $VIRTUAL_ENV_OVERRIDE -eq 1 ]]
                 then
                     export VIRTUAL_ENV_OVERRIDE=0
                 fi
@@ -352,7 +352,7 @@ _venv_remove()
 
             virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-            if [ ! -z "$virtualenv_dir" ]
+            if [[ ! -z $virtualenv_dir ]]
             then
                 echo -e "${blue}venv: removing virtualenv which was specified"\
                         "in a .virtualenv file, use 'venv init' to"\
@@ -374,14 +374,14 @@ _venv_remove()
 _venv_copy()
 {
     hash virtualenv-clone 2> /dev/null
-    if [ $? -ne 0 ]
+    if [[ $? -ne 0 ]]
     then
         echo -e "${red}Error: virtualenv-clone is required for the copy"\
                 "command to work${no_color}"
         return 1
     fi
 
-    if [ -z "$1" ] || [ -z "$2" ]
+    if [[ -z $1 || -z $2 ]]
     then
         echo -e "${blue}Usage: venv copy <source_name>"\
                 "<destination_name>${no_color}"
@@ -391,12 +391,12 @@ _venv_copy()
     local virtualenv=$1
     local destination=$2
 
-    if [ -d "$VIRTUAL_ENV_HOME/$destination" ]
+    if [[ -d "$VIRTUAL_ENV_HOME/$destination" ]]
     then
         echo -e "${red}venv: he destination virtualenv $destination already"\
                 "exists, aborting${no_color}"
         return 1
-    elif [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+    elif [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
     then
         virtualenv-clone \
             "$VIRTUAL_ENV_HOME/$virtualenv" "$VIRTUAL_ENV_HOME/$destination"
@@ -414,7 +414,7 @@ __venv_simple_list()
 
     while IFS= read -r -d '' dir
     do
-        if [ -f "$dir/bin/activate" ]
+        if [[ -f "$dir/bin/activate" ]]
         then
             virtualenv_name=$(basename "$dir")
             echo "$virtualenv_name"
@@ -428,7 +428,7 @@ _venv_list()
     local virtualenv_dir
 
     virtualenvs=$(__venv_simple_list)
-    if [ -z "$virtualenvs" ]
+    if [[ -z $virtualenvs ]]
     then
         echo -e "${blue}venv: no virtualenvs were found in"\
                 "$VIRTUAL_ENV_HOME${no_color}"
@@ -439,11 +439,11 @@ _venv_list()
     IFS=$'\n'
     for virtualenv in $(__venv_simple_list)
     do
-        if [ ! -z "$VIRTUAL_ENV" ] && \
-           [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]
+        if [[ ! -z $VIRTUAL_ENV &&
+              $VIRTUAL_ENV == "$VIRTUAL_ENV_HOME/$virtualenv" ]]
         then
             echo -e -n "${green}* ${virtualenv} "
-            if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
+            if [[ $VIRTUAL_ENV_OVERRIDE -eq 1 ]]
             then
                 echo -e -n "(manually managed)"
             else
@@ -467,11 +467,11 @@ _venv_base()
 
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    if [ ! -z "$1" ]
+    if [[ ! -z $1 ]]
     then
         virtualenv=$1
         shift
-    elif [ ! -z "$virtualenv_dir" ]
+    elif [[ ! -z $virtualenv_dir ]]
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
     else
@@ -481,7 +481,7 @@ _venv_base()
     fi
 
     # Change into the virtualenv directory
-    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+    if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
     then
         cd "$VIRTUAL_ENV_HOME/$virtualenv"
     else
@@ -499,11 +499,11 @@ _venv_site()
 
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    if [ ! -z "$1" ]
+    if [[ ! -z $1 ]]
     then
         virtualenv=$1
         shift
-    elif [ ! -z "$virtualenv_dir" ]
+    elif [[ ! -z $virtualenv_dir ]]
     then
         virtualenv=$(cat "$virtualenv_dir/.virtualenv")
     else
@@ -513,7 +513,7 @@ _venv_site()
     fi
 
     # Change into the virtualenv directory
-    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
+    if [[ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]]
     then
         site_packages_dir=$("$VIRTUAL_ENV_HOME/$virtualenv/bin/python" -c "import distutils; print(distutils.sysconfig.get_python_lib())")
         cd "$site_packages_dir"
@@ -528,9 +528,9 @@ _venv_site()
 __venv_find_virtualenv_file()
 {
     local test_directory=$1
-    while [ "$test_directory" != "/" ]
+    while [[ $test_directory != "/" ]]
     do
-        if [ -f "$test_directory/.virtualenv" ]
+        if [[ -f "$test_directory/.virtualenv" ]]
         then
             virtualenv=$(cat "$test_directory/.virtualenv")
             break
@@ -539,7 +539,7 @@ __venv_find_virtualenv_file()
         fi
     done
 
-    if [ "$test_directory" != "/" ]
+    if [[ $test_directory != "/" ]]
     then
         echo "$test_directory"
     fi
@@ -562,7 +562,7 @@ _venv_bash_completion()
             ;;
         *)
             # Support deletion of multiple virtualenvs at the same time
-            if [ "$command" = "remove" ]
+            if [[ $command == "remove" ]]
             then
                 opts=$(__venv_simple_list)
             else
@@ -603,7 +603,7 @@ site"
             ;;
         *)
             # Support deletion of multiple virtualenvs at the same time
-            if [ "$command" = "remove" ]
+            if [[ $command == "remove" ]]
             then
                 opts=$(__venv_simple_list)
             else
@@ -617,7 +617,7 @@ site"
 
 # Enable bash or ZSH completion for the venv command
 command -v compctl > /dev/null 2>&1
-if [ $? -eq 0 ]
+if [[ $? -eq 0 ]]
 then
     compctl -K _venv_zsh_completion venv
 else

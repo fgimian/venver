@@ -160,7 +160,7 @@ function _venv_init
 
     # Add it to the project's .virtualenv file if necessary
     if begin; [ ! -f "$virtualenv_dir/.virtualenv" ]; or \
-              [ (cat "$virtualenv_dir/.virtualenv") != "$virtualenv" ]; end
+              [ "$virtualenv" != (cat "$virtualenv_dir/.virtualenv") ]; end
         echo "$virtualenv" > "$virtualenv_dir/.virtualenv"
     end
 
@@ -189,7 +189,7 @@ function _venv_clean
     set -l virtualenv (cat "$virtualenv_dir/.virtualenv")
 
     if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-              [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; and \
+              [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; and \
               [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]; end
         echo -e $red"venv: the project's virtualenv has been manually"\
                 "activated, unable to continue"$no_color
@@ -388,7 +388,7 @@ function _venv_list
     echo -e $cyan"virtualenvs found in $VIRTUAL_ENV_HOME"$no_color
     for virtualenv in (__venv_simple_list)
         if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-                  [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; end
+                  [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; end
             echo -e -n $green"* $virtualenv "
             if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
                 echo -e -n "(manually managed)"
