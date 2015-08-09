@@ -30,6 +30,45 @@ However, there are reasons that I wanted to develop my own library.
   is a plugin to pyenv means that help is not as easy to get to.  venver is a
   more focused tool on this particular task.
 
+## Installation ##
+
+### Bash ###
+
+```bash
+curl -o /usr/local/bin/venver.sh https://raw.githubusercontent.com/fgimian/venver/master/venver.sh
+echo "source /usr/local/bin/venver.sh" >> ~/.bash_profile
+source ~/.bash_profile
+```
+
+### ZSH ###
+
+```bash
+curl -o /usr/local/bin/venver.sh https://raw.githubusercontent.com/fgimian/venver/master/venver.sh
+echo "source /usr/local/bin/venver.sh" >> ~/.zshrc
+source ~/.zshrc
+```
+
+### Fish ###
+
+```bash
+curl -o /usr/local/bin/venver.fish https://raw.githubusercontent.com/fgimian/venver/master/venver.fish
+echo ". /usr/local/bin/venver.fish" >> ~/.config/fish/config.fish
+. ~/.config/fish/config.fish
+```
+
+### Changing the Virtualenv Home Directory ###
+
+By default, all virtualenvs are stored in **~/.virtualenvs**, but this may be
+overriden.  Simply export **VIRTUAL_ENV_HOME** with your chosen location before
+souring venver.
+
+e.g.
+
+```bash
+export VIRTUAL_ENV_HOME=$HOME/projects/virtualenvs
+# Source the library here
+```
+
 ## Quick Start ##
 
 ```bash
@@ -82,6 +121,10 @@ venv clean  # while in the myproject directory, this will delete the myproject
             # virtualenv and the related .virtualenv file (venver is smart 
             # enough to deal with being in a sub-directory of the project 
             # while doing this)
+
+# With the create and init commands, you may pass additional arguments
+# to the virtualenv command
+venv init -p python3.4
 ```
 
 ## Bug-fixes & Improvements Coming Soon ##
