@@ -62,7 +62,9 @@ venv()
     shift
 
     # Display help if no command or an invalid command was provided
-    if [ -z "$action" ] || [ "$(type -t _venv_"$action")" != "function" ]
+    declare -f "_venv_${action}" > /dev/null
+    command_found=$?
+    if [ -z "$action" ] || [ $command_found -ne 0 ]
     then
         echo -e "${blue}Usage: venv <command> [<args>]${no_color}
 
