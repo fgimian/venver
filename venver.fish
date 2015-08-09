@@ -140,7 +140,7 @@ function _venv_init
     if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
-    else if  [ ! -z "$virtualenv_dir" ]
+    else if [ ! -z "$virtualenv_dir" ]
         set virtualenv (cat "$virtualenv_dir/.virtualenv")
     else
         set virtualenv (basename (pwd))
@@ -352,7 +352,7 @@ function _venv_copy
         echo -e $red"venv: he destination virtualenv $destination already"\
                 "exists, aborting"$no_color
         return 1
-    else if  [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
+    else if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         virtualenv-clone \
             "$VIRTUAL_ENV_HOME/$virtualenv" "$VIRTUAL_ENV_HOME/$destination"
     else
@@ -414,7 +414,7 @@ function _venv_base
     if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
-    else if  [ ! -z "$virtualenv_dir" ]
+    else if [ ! -z "$virtualenv_dir" ]
         set virtualenv (cat "$virtualenv_dir/.virtualenv")
     else
         echo -e $red"venv: no virtualenv specified or found in a"\
@@ -442,7 +442,7 @@ function _venv_site
     if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
-    else if  [ ! -z "$virtualenv_dir" ]
+    else if [ ! -z "$virtualenv_dir" ]
         set virtualenv (cat "$virtualenv_dir/.virtualenv")
     else
         echo -e $red"venv: no virtualenv specified or found in a"\
