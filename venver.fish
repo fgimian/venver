@@ -29,12 +29,12 @@
 # THE SOFTWARE.
 
 # Disable virtualenv override by default
-if test -z "$VIRTUAL_ENV_OVERRIDE"
+if [ -z "$VIRTUAL_ENV_OVERRIDE" ]
     export VIRTUAL_ENV_OVERRIDE=0
 end
 
 # Set the virtualenv home if not set already
-if test -z "$VIRTUAL_ENV_HOME"
+if [ -z "$VIRTUAL_ENV_HOME" ]
     export VIRTUAL_ENV_HOME=$HOME/.virtualenvs
 end
 
@@ -49,7 +49,7 @@ set no_color '\033[0m'
 # appropriate function based on user input
 function venv
     # Create the virtualenv home if it doesn't exist already
-    if test ! -d "$VIRTUAL_ENV_HOME"
+    if [ ! -d "$VIRTUAL_ENV_HOME" ]
         mkdir -p "$VIRTUAL_ENV_HOME"
     end
 
@@ -58,9 +58,9 @@ function venv
     set -e argv[1]
 
     # Display help if no command or an invalid command was provided
-    if begin; [ -z "$action" ]; or [ (type -t _venv_"$action") != "function" ]; end
-        echo -e "
-"$blue"Usage: venv <command> [<args>]"$no_color"
+    if begin; [ -z "$action" ]; or \
+              [ (type -t _venv_"$action") != "function" ]; end
+        echo -e $blue"Usage: venv <command> [<args>]"$no_color"
 
 "$cyan"Automatically manage virtualenvs for projects:"$no_color"
 
@@ -80,9 +80,10 @@ function venv
     list          List all available virtualenvs
     base          Change into the base directory of a virtualenv
     site          Change into the site-packages directory of a virtualenv
-"
 
-        if test ! -z "$argv[1]"
+Please see https://github.com/fgimian/venver for more information"
+
+        if [ ! -z "$argv[1]" ]
             echo -e $red"venv: unsupported command $argv[1]"$no_color
             echo -e ""
         end
@@ -99,7 +100,7 @@ function cd
     builtin cd $argv
 
     # If the user is controlling their virtualenvs, we don't do anything
-    if test $VIRTUAL_ENV_OVERRIDE -eq 1
+    if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
         return
     end
 
@@ -108,10 +109,10 @@ function cd
 
     # If the .virtualenv file was found, we ensure that the environment is
     # activated
-    if test ! -z "$virtualenv_dir"
+    if [ ! -z "$virtualenv_dir" ]
         set virtualenv (cat "$virtualenv_dir/.virtualenv")
 
-        if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+        if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
             source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
         else
             echo -e $red"venv: the virtualenv $virtualenv doesn't exist,"\
@@ -122,7 +123,8 @@ function cd
         # If no virtualenv was found and one is already activated, we
         # deactivate it for the user
         # TODO: re-instate the check for home directory
-        if begin; [ ! -z "$VIRTUAL_ENV" ]; end #; and [[ $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]; end
+        if begin; [ ! -z "$VIRTUAL_ENV" ]; end
+        #; and [[ $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]; end
             deactivate
         end
     end
@@ -135,7 +137,7 @@ function _venv_init
 
     set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-    if test ! -z "$argv[1]"
+    if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
     else if  [ ! -z "$virtualenv_dir" ]
@@ -144,26 +146,26 @@ function _venv_init
         set virtualenv (basename (pwd))
     end
 
-    if test -z "$virtualenv_dir"
+    if [ -z "$virtualenv_dir" ]
         set virtualenv_dir (pwd)
     end
 
     # Create the virtualenv
-    if test ! -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+    if [ ! -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         virtualenv $argv "$VIRTUAL_ENV_HOME/$virtualenv"
-        if test $status -ne 0
+        if [ $status -ne 0 ]
             return $status
         end
     end
 
     # Add it to the project's .virtualenv file if necessary
     if begin; [ ! -f "$virtualenv_dir/.virtualenv" ]; or \
-         [ (cat "$virtualenv_dir/.virtualenv") != "$virtualenv" ]; end
+              [ (cat "$virtualenv_dir/.virtualenv") != "$virtualenv" ]; end
         echo "$virtualenv" > "$virtualenv_dir/.virtualenv"
     end
 
     # Activate the virtualenv
-    if test $VIRTUAL_ENV_OVERRIDE -eq 0
+    if [ $VIRTUAL_ENV_OVERRIDE -eq 0 ]
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
     else
         echo -e $blue"venv: a virtualenv has been activated manually,"\
@@ -178,7 +180,7 @@ function _venv_clean
 
     set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-    if test -z "$virtualenv_dir"
+    if [ -z "$virtualenv_dir" ]
         echo -e $red"venv: no virtualenv was found in a .virtualenv"\
                 "file"$no_color
         return 1
@@ -187,15 +189,15 @@ function _venv_clean
     set virtualenv (cat "$virtualenv_dir/.virtualenv")
 
     if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-         [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; and \
-         [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]; end
+              [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; and \
+              [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]; end
         echo -e $red"venv: the project's virtualenv has been manually"\
                 "activated, unable to continue"$no_color
         return 1
     end
 
     if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-         [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; end
+              [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; end
         deactivate
     end
 
@@ -206,7 +208,7 @@ end
 
 # Creates a new self-managed virtualenv with the given name
 function _venv_create
-    if test -z "$argv[1]"
+    if [ -z "$argv[1]" ]
         echo -e $blue"Usage: venv create <name>"$no_color
         return 1
     end
@@ -214,21 +216,21 @@ function _venv_create
     set virtualenv $argv[1]
     set -e argv[1]
 
-    if test -d "$VIRTUAL_ENV_HOME/$virtualenv"
+    if [ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]
         echo -e $red"venv: the virtualenv $virtualenv already exists,"\
                 "aborting"$no_color
         return 1
     end
 
     virtualenv $argv "$VIRTUAL_ENV_HOME/$virtualenv"
-    if test $status -eq 0
+    if [ $status -eq 0 ]
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
     end
 end
 
 # Activates the nearest virtualenv or one provided
 function _venv_activate
-    if test -z "$argv[1]"
+    if [ -z "$argv[1]" ]
         echo -e $blue"Usage: venv create <name>"$no_color
         return 1
     end
@@ -236,7 +238,7 @@ function _venv_activate
     set -l virtualenv
     set virtualenv $argv[1]
 
-    if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
         export VIRTUAL_ENV_OVERRIDE=1
     else
@@ -248,14 +250,14 @@ end
 
 # Deactivates a self-managed virtualenv
 function _venv_deactivate
-    if test ! -z "$VIRTUAL_ENV"
+    if [ ! -z "$VIRTUAL_ENV" ]
         set -l virtualenv
         set -l virtualenv_dir
         set -l override 0
 
         set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-        if test $VIRTUAL_ENV_OVERRIDE -eq 1
+        if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
             set override 1
             deactivate
             export VIRTUAL_ENV_OVERRIDE=0
@@ -263,11 +265,11 @@ function _venv_deactivate
 
         # If the .virtualenv file was found, we ensure that environment stays
         # activated
-        if test ! -z "$virtualenv_dir"
+        if [ ! -z "$virtualenv_dir" ]
             set virtualenv (cat "$virtualenv_dir/.virtualenv")
-            if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+            if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
                 source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
-                if test $override -eq 1
+                if [ $override -eq 1 ]
                     echo -e $blue"venv: reverting to the virtualenv"\
                             "$virtualenv as defined in the .virtualenv"\
                             "file"$no_color
@@ -289,7 +291,7 @@ end
 
 # Deletes a self-managed virtualenv
 function _venv_remove
-    if test -z "$argv[1]"
+    if [ -z "$argv[1]" ]
         echo -e $blue"Usage: venv remove <name>"$no_color
         return 1
     end
@@ -301,10 +303,10 @@ function _venv_remove
     # Remove the virtualenv and all its related files
     set return_code 0
     for virtualenv in $argv
-        if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+        if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
             if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-                 [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; end
-                if test $VIRTUAL_ENV_OVERRIDE -eq 1
+                      [ "$VIRTUAL_ENV" = "$VIRTUAL_ENV_HOME/$virtualenv" ]; end
+                if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
                     export VIRTUAL_ENV_OVERRIDE=0
                 end
                 deactivate
@@ -312,7 +314,7 @@ function _venv_remove
 
             set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-            if test ! -z "$virtualenv_dir"
+            if [ ! -z "$virtualenv_dir" ]
                 echo -e $blue"venv: removing virtualenv which was specified"\
                         "in a .virtualenv file, use 'venv init' to"\
                         "recreate"$no_color
@@ -332,7 +334,7 @@ end
 # Makes a copy of a virtualenv
 function _venv_copy
     hash virtualenv-clone 2> /dev/null
-    if test $status -ne 0
+    if [ $status -ne 0 ]
         echo -e $red"Error: virtualenv-clone is required for the copy"\
                 "command to work"$no_color
         return 1
@@ -347,12 +349,13 @@ function _venv_copy
     set -l virtualenv $argv[1]
     set -l destination $argv[2]
 
-    if test -d "$VIRTUAL_ENV_HOME/$destination"
+    if [ -d "$VIRTUAL_ENV_HOME/$destination" ]
         echo -e $red"venv: he destination virtualenv $destination already"\
                 "exists, aborting"$no_color
         return 1
     else if  [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
-        virtualenv-clone "$VIRTUAL_ENV_HOME/$virtualenv" "$VIRTUAL_ENV_HOME/$destination"
+        virtualenv-clone \
+            "$VIRTUAL_ENV_HOME/$virtualenv" "$VIRTUAL_ENV_HOME/$destination"
     else
         echo -e $red"venv: the virtualenv $virtualenv doesn't exist, unable"\
                 "to change directory"$no_color
@@ -365,7 +368,7 @@ function __venv_simple_list
     set -l virtualenv_name
 
     for dir in (find "$VIRTUAL_ENV_HOME" -mindepth 1 -maxdepth 1 -type d)
-        if test -f "$dir/bin/activate.fish"
+        if [ -f "$dir/bin/activate.fish" ]
             set virtualenv_name (basename "$dir")
             echo "$virtualenv_name"
         end
@@ -377,7 +380,7 @@ function _venv_list
     set -l virtualenv_dir
 
     set virtualenvs (__venv_simple_list)
-    if test -z "$virtualenvs"
+    if [ -z "$virtualenvs" ]
         echo -e $blue"venv: no virtualenvs were found in"\
                 "$VIRTUAL_ENV_HOME"$no_color
         return 1
@@ -386,9 +389,9 @@ function _venv_list
     echo -e $cyan"virtualenvs found in $VIRTUAL_ENV_HOME"$no_color
     for virtualenv in (__venv_simple_list)
         if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
-            [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; end
+                  [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; end
             echo -e -n $green"* $virtualenv "
-            if test $VIRTUAL_ENV_OVERRIDE -eq 1
+            if [ $VIRTUAL_ENV_OVERRIDE -eq 1 ]
                 echo -e -n "(manually managed)"
             else
                 set virtualenv_dir (__venv_find_virtualenv_file (pwd))
@@ -409,7 +412,7 @@ function _venv_base
 
     set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-    if test ! -z "$argv[1]"
+    if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
     else if  [ ! -z "$virtualenv_dir" ]
@@ -421,7 +424,7 @@ function _venv_base
     end
 
     # Change into the virtualenv directory
-    if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         cd "$VIRTUAL_ENV_HOME/$virtualenv"
     else
         echo -e $red"venv: the virtualenv $virtualenv doesn't exist, unable"\
@@ -437,7 +440,7 @@ function _venv_site
 
     set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-    if test ! -z "$argv[1]"
+    if [ ! -z "$argv[1]" ]
         set virtualenv $argv[1]
         set -e argv[1]
     else if  [ ! -z "$virtualenv_dir" ]
@@ -449,7 +452,7 @@ function _venv_site
     end
 
     # Change into the virtualenv directory
-    if test -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+    if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         set site_packages_dir (eval "$VIRTUAL_ENV_HOME/$virtualenv/bin/python -c \"import distutils; print(distutils.sysconfig.get_python_lib())\"")
         cd "$site_packages_dir"
     else
@@ -463,7 +466,7 @@ end
 function __venv_find_virtualenv_file
     set -l test_directory $argv[1]
     while [ "$test_directory" != "/" ]
-        if test -f "$test_directory/.virtualenv"
+        if [ -f "$test_directory/.virtualenv" ]
             set virtualenv (cat "$test_directory/.virtualenv")
             break
         else
@@ -471,12 +474,12 @@ function __venv_find_virtualenv_file
         end
     end
 
-    if test "$test_directory" != "/"
+    if [ "$test_directory" != "/" ]
         echo "$test_directory"
     end
 end
 
-function __fish_venv_needs_command
+function __venv_fish_needs_command
     set cmd (commandline -opc)
     if [ (count $cmd) -eq 1 -a $cmd[1] = 'venv' ]
         return 0
@@ -484,9 +487,13 @@ function __fish_venv_needs_command
     return 1
 end
 
-function __fish_venv_using_command
+function __venv_fish_using_command
     set cmd (commandline -opc)
+    echo "argv is: $argv" >> abc.txt
+    echo "cmd is: $cmd" >> abc.txt
     if [ (count $cmd) -gt 1 ]
+        echo "comparing $argv[1] with $cmd[2]" >> abc.txt
+        echo "" >> abc.txt
         if [ $argv[1] = $cmd[2] ]
             return 0
         end
@@ -495,17 +502,29 @@ function __fish_venv_using_command
 end
 
 # Fish completion for venver
-complete -f -c venv -n '__fish_venv_needs_command' -a init -d 'Initialise and create a virtualenv for the current project'
-complete -f -c venv -n '__fish_venv_needs_command' -a clean -d 'Remove the virtualenv assigned to the current project'
-complete -f -c venv -n '__fish_venv_needs_command' -a create -d 'Create a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a activate -d 'Activate a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a deactivate -d 'Deactivate a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a remove -d 'Remove a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a copy -d 'Make a copy of a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a list -d 'List all available virtualenvs'
-complete -f -c venv -n '__fish_venv_needs_command' -a base -d 'Change into the base directory of a virtualenv'
-complete -f -c venv -n '__fish_venv_needs_command' -a site -d 'Change into the site-packages directory of a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a init -d 'Initialise and create a virtualenv for the current project'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a clean -d 'Remove the virtualenv assigned to the current project'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a create -d 'Create a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a activate -d 'Activate a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a deactivate -d 'Deactivate a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a remove -d 'Remove a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a copy -d 'Make a copy of a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a list -d 'List all available virtualenvs'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a base -d 'Change into the base directory of a virtualenv'
+complete -f -c venv -n '__venv_fish_needs_command' \
+    -a site -d 'Change into the site-packages directory of a virtualenv'
 
 for command in init clean create activate deactivate remove copy list base site
-    complete -f -c venv -n "__fish_venv_using_command $command" -a '(__venv_simple_list)' -d "virtualenv"
+    complete -f -c venv \
+        -n "__venv_fish_using_command $command" \
+        -a '(__venv_simple_list)' -d "virtualenv"
 end
