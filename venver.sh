@@ -546,7 +546,7 @@ __venv_find_virtualenv_file()
 }
 
 # Bash completion for venver
-_venv_completion()
+_venv_bash_completion()
 {
     local cur prev opts
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -574,5 +574,52 @@ _venv_completion()
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
-# Enable bash completion for the venv command
-complete -F _venv_completion venv
+# ZSH completion for venver
+_venv_zsh_completion()
+{
+    local words completions
+    read -cA words
+
+    local cur prev opts
+    cur="${words[-1]}"
+    prev="${words[-2]}"
+    command="${words[2]}"
+
+    case $prev in
+        venv)
+            opts="init
+clean
+create
+activate
+deactivate
+remove
+copy
+list
+base
+site"
+            ;;
+        activate|base|site|remove|init|copy)
+            opts=$(__venv_simple_list)
+            ;;
+        *)
+            # Support deletion of multiple virtualenvs at the same time
+            if [ "$command" = "remove" ]
+            then
+                opts=$(__venv_simple_list)
+            else
+                opts=""
+            fi
+            ;;
+    esac
+
+    reply=(${(ps:\n:)opts})
+}
+
+# Enable bash or ZSH completion for the venv command
+command -v compctl > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+    compctl -K _venv_zsh_completion venv
+else
+    complete -F _venv_bash_completion venv
+fi

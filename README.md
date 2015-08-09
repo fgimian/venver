@@ -10,6 +10,8 @@ similarities to virtualenvwrapper but attempts to be much simpler, not polute
 the command line with various commands and provide auto-switching out of the
 box.
 
+venver supports bash, ZSH and fish shells fully, include completions for each.
+
 ## Why Another Tool? ##
 
 Both [virtualenvwrapper](https://bitbucket.org/dhellmann/virtualenvwrapper) and
@@ -92,5 +94,3 @@ venv clean  # while in the myproject directory, this will delete the myproject
 ## Current Plans ##
 
 * Unit tests using bats
-* Support for zsh
-* Autocomplete for virtualenv options (if possible)
