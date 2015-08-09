@@ -249,6 +249,7 @@ _venv_create()
     if [ $? -eq 0 ]
     then
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate"
+        export VIRTUAL_ENV_OVERRIDE=1
     fi
 }
 

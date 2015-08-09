@@ -225,6 +225,7 @@ function _venv_create
     virtualenv $argv "$VIRTUAL_ENV_HOME/$virtualenv"
     if [ $status -eq 0 ]
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
+        export VIRTUAL_ENV_OVERRIDE=1
     end
 end
 
