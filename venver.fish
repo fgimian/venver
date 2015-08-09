@@ -54,7 +54,7 @@ function venv
     end
 
     # Obtain the action and then remove it from the argument list
-    set action $argv[1]
+    set -l action $argv[1]
     set -e argv[1]
 
     # Display help if no command or an invalid command was provided
@@ -186,7 +186,7 @@ function _venv_clean
         return 1
     end
 
-    set virtualenv (cat "$virtualenv_dir/.virtualenv")
+    set -l virtualenv (cat "$virtualenv_dir/.virtualenv")
 
     if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
               [ "$VIRTUAL_ENV_HOME/$virtualenv" = "$VIRTUAL_ENV" ]; and \
@@ -213,7 +213,7 @@ function _venv_create
         return 1
     end
 
-    set virtualenv $argv[1]
+    set -l virtualenv $argv[1]
     set -e argv[1]
 
     if [ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]
@@ -235,8 +235,7 @@ function _venv_activate
         return 1
     end
 
-    set -l virtualenv
-    set virtualenv $argv[1]
+    set -l virtualenv $argv[1]
 
     if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
         source "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish"
@@ -296,12 +295,11 @@ function _venv_remove
         return 1
     end
 
-    set -l return_code
+    set -l return_code 0
     set -l virtualenv
     set -l virtualenv_dir
 
     # Remove the virtualenv and all its related files
-    set return_code 0
     for virtualenv in $argv
         if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate.fish" ]
             if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
@@ -324,7 +322,7 @@ function _venv_remove
         else
             echo -e $red"venv: the virtualenv $virtualenv doesn't exist,"\
                     "unable to remove"$no_color
-            return_code=1
+            set -l return_code 1
         end
     end
 

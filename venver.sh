@@ -51,8 +51,6 @@ no_color='\033[0m'
 # appropriate function based on user input
 venv()
 {
-    local action
-
     # Create the virtualenv home if it doesn't exist already
     if [ ! -d "$VIRTUAL_ENV_HOME" ]
     then
@@ -60,7 +58,7 @@ venv()
     fi
 
     # Obtain the action and then remove it from the argument list
-    action=$1
+    local action=$1
     shift
 
     # Display help if no command or an invalid command was provided
@@ -235,7 +233,7 @@ _venv_create()
         return 1
     fi
 
-    virtualenv=$1
+    local virtualenv=$1
     shift
 
     if [ -d "$VIRTUAL_ENV_HOME/$virtualenv" ]
@@ -261,8 +259,7 @@ _venv_activate()
         return 1
     fi
 
-    local virtualenv
-    virtualenv=$1
+    local virtualenv=$1
 
     if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
     then
@@ -331,12 +328,11 @@ _venv_remove()
         return 1
     fi
 
-    local return_code
+    local return_code=0
     local virtualenv
     local virtualenv_dir
 
     # Remove the virtualenv and all its related files
-    return_code=0
     for virtualenv in "$@"
     do
         if [ -f "$VIRTUAL_ENV_HOME/$virtualenv/bin/activate" ]
