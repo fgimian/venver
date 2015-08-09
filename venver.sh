@@ -147,7 +147,7 @@ _venv_init()
 
     virtualenv_dir=$(__venv_find_virtualenv_file "$(pwd)")
 
-    if [[ ! -z $1 ]]
+    if [[ ! -z $1 && $1 != -* ]]
     then
         virtualenv=$1
         shift

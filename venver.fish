@@ -122,9 +122,8 @@ function cd
     else
         # If no virtualenv was found and one is already activated, we
         # deactivate it for the user
-        # TODO: re-instate the check for home directory
-        if begin; [ ! -z "$VIRTUAL_ENV" ]; end
-        #; and [[ $VIRTUAL_ENV == $VIRTUAL_ENV_HOME/* ]]; end
+        if begin; [ ! -z "$VIRTUAL_ENV" ]; and \
+                  echo $VIRTUAL_ENV | grep -q "^$VIRTUAL_ENV_HOME/"; end
             deactivate
         end
     end
@@ -137,7 +136,7 @@ function _venv_init
 
     set virtualenv_dir (__venv_find_virtualenv_file (pwd))
 
-    if [ ! -z "$argv[1]" ]
+    if begin; [ ! -z "$argv[1]" ]; and echo $argv[1] | not grep -q "^\-"; end
         set virtualenv $argv[1]
         set -e argv[1]
     else if [ ! -z "$virtualenv_dir" ]
