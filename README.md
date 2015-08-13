@@ -73,7 +73,7 @@ export VIRTUAL_ENV_HOME=$HOME/projects/virtualenvs
 
 ```bash
 # Source the venver script (add this to your .bash_profile too)
-soucre venver.sh
+source venver.sh
 
 # Create a virtualenv for the current project (enabling auto-activation)
 mkdir myproject
