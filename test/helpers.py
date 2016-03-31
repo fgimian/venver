@@ -16,7 +16,7 @@ def run(args, venv_dir, shell):
     """
     Runs venver with the args and shell provided and returns a basic
     CommandOutput object containing stdout, stderr and the return code
-    for the call
+    for the call.
     """
     commands = [
         'export VIRTUAL_ENV_HOME={venv_dir}'.format(venv_dir=venv_dir),
@@ -40,6 +40,7 @@ def run(args, venv_dir, shell):
 @pytest.fixture
 def venv_tempdir():
     venv_dir = tempfile.mkdtemp()
+
     def fin():
         shutil.rmtree(venv_dir)
     return venv_dir
