@@ -1,9 +1,10 @@
 # venver
-*Simple virtualenv management and auto-switching*
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/fgimian/venver/blob/master/LICENSE)
 
 **Please note that this project is a work in progress**
 
-## Introduction ##
+## Introduction
 
 venver simplifies virtualenv management for the Bash shell.  It has various
 similarities to virtualenvwrapper but attempts to be much simpler, not polute
@@ -12,16 +13,16 @@ box.
 
 venver supports bash, ZSH and fish shells fully, include completions for each.
 
-## Why Another Tool? ##
+## Why Another Tool?
 
 Both [virtualenvwrapper](https://bitbucket.org/dhellmann/virtualenvwrapper) and
-[pyenv-virtualenv](https://github.com/yyuu/pyenv-virtualenv) greatly inspired 
+[pyenv-virtualenv](https://github.com/yyuu/pyenv-virtualenv) greatly inspired
 this tool.  I highly encourage everyone to try all these tools and chose the one
 that best fits their needs.  I'm particularly fond of all the pyenv projects.
 
 However, there are reasons that I wanted to develop my own library.
 
-* **virtualenvwrapper** doesn't centralise its commands and pollutes your 
+* **virtualenvwrapper** doesn't centralise its commands and pollutes your
   shell with a huge number of bash functions.  It also doesn't offer auto-
   switching out of the box.
 * **pyenv-virtualenv** was much much closer to what I was after and is a really
@@ -30,9 +31,9 @@ However, there are reasons that I wanted to develop my own library.
   is a plugin to pyenv means that help is not as easy to get to.  venver is a
   more focused tool on this particular task.
 
-## Installation ##
+## Installation
 
-### Bash ###
+### Bash
 
 ```bash
 curl -o /usr/local/bin/venver.sh https://raw.githubusercontent.com/fgimian/venver/master/venver.sh
@@ -40,7 +41,7 @@ echo "source /usr/local/bin/venver.sh" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
-### ZSH ###
+### ZSH
 
 ```bash
 curl -o /usr/local/bin/venver.sh https://raw.githubusercontent.com/fgimian/venver/master/venver.sh
@@ -48,7 +49,7 @@ echo "source /usr/local/bin/venver.sh" >> ~/.zshrc
 source ~/.zshrc
 ```
 
-### Fish ###
+### Fish
 
 ```bash
 curl -o /usr/local/bin/venver.fish https://raw.githubusercontent.com/fgimian/venver/master/venver.fish
@@ -56,20 +57,7 @@ echo ". /usr/local/bin/venver.fish" >> ~/.config/fish/config.fish
 . ~/.config/fish/config.fish
 ```
 
-### Changing the Virtualenv Home Directory ###
-
-By default, all virtualenvs are stored in **~/.virtualenvs**, but this may be
-overriden.  Simply export **VIRTUAL_ENV_HOME** with your chosen location before
-souring venver.
-
-e.g.
-
-```bash
-export VIRTUAL_ENV_HOME=$HOME/projects/virtualenvs
-# Source the library here
-```
-
-## Quick Start ##
+## Quick Start
 
 ```bash
 # Source the venver script (add this to your .bash_profile too)
@@ -110,16 +98,16 @@ venv base
 # You may also copy a virtualenv to a new name
 venv copy my_venv new_venv
 
-# Finally, you may remove any virtualenv you like (if active, it will be 
+# Finally, you may remove any virtualenv you like (if active, it will be
 # deactivated for you)
 venv remove my_venv
 
 # You may also remove a project virtualenv and its binding
 mkdir myproject_subdir
 cd myproject_subdir
-venv clean  # while in the myproject directory, this will delete the myproject 
-            # virtualenv and the related .virtualenv file (venver is smart 
-            # enough to deal with being in a sub-directory of the project 
+venv clean  # while in the myproject directory, this will delete the myproject
+            # virtualenv and the related .virtualenv file (venver is smart
+            # enough to deal with being in a sub-directory of the project
             # while doing this)
 
 # With the create and init commands, you may pass additional arguments
@@ -127,7 +115,26 @@ venv clean  # while in the myproject directory, this will delete the myproject
 venv init -p python3.4
 ```
 
-## Bug-fixes & Improvements Coming Soon ##
+### Changing the Virtualenv Home Directory
+
+By default, all virtualenvs are stored in **~/.virtualenvs**, but this may be
+overriden.  Simply export **VIRTUAL_ENV_HOME** with your chosen location before
+souring venver.
+
+e.g.
+
+```bash
+export VIRTUAL_ENV_HOME=$HOME/projects/virtualenvs
+source venver.sh
+```
+
+## License
+
+venver is released under the **MIT** license. Please see the
+[LICENSE](https://github.com/fgimian/venver/blob/master/LICENSE)
+file for more details.
+
+## TODO
 
 * Auto-complete of virtualenvs with spaces doesn't work correctly
 * Fish autocomplete is a little inaccurate
