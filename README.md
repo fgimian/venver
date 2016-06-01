@@ -2,6 +2,11 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/fgimian/venver/blob/master/LICENSE)
 
+![venver Logo](https://raw.githubusercontent.com/fgimian/venver/master/images/venver-logo.png)
+
+Artwork courtesy of
+[Open Clip Art Library](https://openclipart.org/detail/110179/decorative-bird)
+
 **Please note that this project is a work in progress**
 
 ## Introduction
