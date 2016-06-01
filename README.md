@@ -7,8 +7,6 @@
 Artwork courtesy of
 [Open Clip Art Library](https://openclipart.org/detail/110179/decorative-bird)
 
-**Please note that this project is a work in progress**
-
 ## Introduction
 
 venver simplifies virtualenv management for the Bash shell.  It has various
